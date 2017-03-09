@@ -61,12 +61,24 @@
                             <!-- Delete Button -->
                             <td>
                                 <form action="{{ url('task/'.$task->id) }}" method="POST">
-                                  <input type="hidden" name="_method" value="DELETE">
+
                                     {{ csrf_field() }}
                                     {{ method_field('DELETE') }}
 
                                     <button type="submit" id="delete-task-{{ $task->id }}" class="btn btn-danger">
                                         <i class="fa fa-btn fa-trash"></i>Delete
+                                    </button>
+                                </form>
+                            </td>
+                            <!-- Update Button -->
+                            <td>
+                                <form action="{{ url('task/'.$task->id) }}" method="POST">
+
+                                    {{ csrf_field() }}
+                                    {{ method_field('PUT') }}
+
+                                    <button type="submit" id="edit-task-{{ $task->id }}" class="btn btn-danger">
+                                        <i class="fa fa-btn fa-trash"></i>Edit
                                     </button>
                                 </form>
                             </td>
@@ -78,4 +90,10 @@
         </div>
     @endif
 
+@endsection
+
+@section('scripts')
+    <script type="text/javascript">
+
+    </script>
 @endsection
