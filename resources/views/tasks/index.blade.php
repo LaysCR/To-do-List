@@ -72,20 +72,44 @@
                             </td>
                             <!-- Update Button -->
                             <td>
-                                <form action="{{ url('task/'.$task->id) }}" method="POST">
 
                                     {{ csrf_field() }}
                                     {{ method_field('PUT') }}
 
-                                    <button type="submit" id="edit-task-{{ $task->id }}" class="btn btn-danger">
+                                    <button type="button" id="edit-task-{{ $task->id }}" class="btn btn-danger" data-toggle="modal" data-target="#myModal">
                                         <i class="fa fa-btn fa-trash"></i>Edit
                                     </button>
-                                </form>
                             </td>
                           </tr>
                         @endforeach
                     </tbody>
                 </table>
+                <!-- Modal -->
+                <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+
+                      <div class="modal-header">
+                        <label for="message-text" class="control-label">Edit</label>
+                      </div>
+
+                      <form action="{{ url('task/'.$task->id) }}" method="POST">
+                      <textarea class="form-control" id="description" name="description"></textarea>
+                      <br>
+
+                    <div class="modal-footer">
+                      <button type="button" class="btn" data-dismiss="modal" id="form-close">Cancel</button>
+                      <button type="button" id="edit-task-{{ $task->id }}" class="btn btn-success" data-toggle="modal" data-target="#myModal">
+                          <i class="fa fa-btn fa-trash"></i>Submit
+                      </button>
+                    </form>
+                    </div>
+
+                  </div>
+
+                </div>
+              </div>
+
             </div>
         </div>
     @endif
@@ -94,6 +118,17 @@
 
 @section('scripts')
     <script type="text/javascript">
+    function toggleModal() {
+      $('#myModal').modal("toggle");
+    }
+      $(document).ready(function () {
+        $("#edit-task-{{ $task->id }}").click(toggleModal);
+          // e.preventDefault();
 
+          // .on('shown.bs.modal', function () {
+            // $('#myInput').focus();
+          // })
+
+      });
     </script>
 @endsection
