@@ -42,12 +42,12 @@ class TaskController extends Controller
         return redirect('/tasks');
     }
 
-    public function edit(Request $request, Task $task) {
+    public function edit(Request $request, $id) {
+        $task = Task::find($task);
+        $task->name = $request->name;
 
-        return redirect('/tasks');
+        $task->save();
+        return response()->json($task);
     }
 
-    public function update(Request $request, Task $task) {
-
-    }
 }

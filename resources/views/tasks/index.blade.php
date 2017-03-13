@@ -72,13 +72,12 @@
                             </td>
                             <!-- Update Button -->
                             <td>
-
-                                    {{ csrf_field() }}
-                                    {{ method_field('PUT') }}
-
-                                    <button type="button" id="edit-task-{{ $task->id }}" class="btn btn-danger" data-toggle="modal" data-target="#myModal">
-                                        <i class="fa fa-btn fa-trash"></i>Edit
-                                    </button>
+                                <form>
+                                  <input type="hidden" value="{{$task}}">
+                                  <button type="button" class="btn btn-danger edit-task">
+                                      <i class="fa fa-btn fa-trash"></i>Edit
+                                  </button>
+                                </form>
                             </td>
                           </tr>
                         @endforeach
@@ -94,12 +93,14 @@
                       </div>
 
                       <form action="{{ url('task/'.$task->id) }}" method="POST">
-                      <textarea class="form-control" id="description" name="description"></textarea>
+                      <textarea id="edit-text" class="edit-area form-control"></textarea>
                       <br>
 
                     <div class="modal-footer">
                       <button type="button" class="btn" data-dismiss="modal" id="form-close">Cancel</button>
-                      <button type="button" id="edit-task-{{ $task->id }}" class="btn btn-success" data-toggle="modal" data-target="#myModal">
+                          {{ csrf_field() }}
+                          {{ method_field('PUT') }}
+                      <button type="button" id="btn-edit" class="btn btn-success edit-task-{{ $task->id }}" data-toggle="modal" data-target="#myModal">
                           <i class="fa fa-btn fa-trash"></i>Submit
                       </button>
                     </form>
@@ -118,17 +119,25 @@
 
 @section('scripts')
     <script type="text/javascript">
-    function toggleModal() {
-      $('#myModal').modal("toggle");
-    }
+
       $(document).ready(function () {
-        $("#edit-task-{{ $task->id }}").click(toggleModal);
-          // e.preventDefault();
+        $(".edit-task").click(function (e) {
+          e.preventDefault();
+          var task = JSON.parse($(this).parent().children().val());
+          $("#edit-text").val(task.name);
+          $("#myModal").modal("show");
 
-          // .on('shown.bs.modal', function () {
-            // $('#myInput').focus();
-          // })
+          console.log(task);
 
+          $.ajax({
+            type : "PUT",
+            url : "/tasks/"+task.id,
+            success : function (data) {
+
+            }
+          });
+
+        });
       });
     </script>
 @endsection
