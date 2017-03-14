@@ -88,24 +88,24 @@
                   <div class="modal-dialog" role="document">
                     <div class="modal-content">
 
-                      <div class="modal-header">
-                        <label for="message-text" class="control-label">Edit</label>
-                      </div>
+                    <div class="modal-header">
+                      <label for="message-text" class="control-label">Edit</label>
+                    </div>
 
-                      <form action="{{ url('task/'.$task->id) }}" method="POST">
+                      <br>
+                      <form id="updateForm" action="{{ url('task/'.$task->id) }}" method="POST">
+                        {{-- <input id="tokenVerify" type="hidden" value="{{csrf_token()}}"> --}}
                       <textarea id="edit-text" class="edit-area form-control"></textarea>
                       <br>
 
                     <div class="modal-footer">
                       <button type="button" class="btn" data-dismiss="modal" id="form-close">Cancel</button>
-                          {{ csrf_field() }}
-                          {{ method_field('PUT') }}
-                      <button type="button" id="btn-edit" class="btn btn-success edit-task-{{ $task->id }}" data-toggle="modal" data-target="#myModal">
+                      <button type="submit" id="btn-edit" class="btn btn-success edit-task-{{ $task->id }}" value="{{ $task->id }}"
+                        data-toggle="modal" data-target="#myModal">
                           <i class="fa fa-btn fa-trash"></i>Submit
                       </button>
                     </form>
                     </div>
-
                   </div>
 
                 </div>
@@ -121,22 +121,65 @@
     <script type="text/javascript">
 
       $(document).ready(function () {
-        $(".edit-task").click(function (e) {
+
+        var task;
+        var row;
+
+        $(".edit-task").click(function () {
+          $("#myModal").modal("toggle");
+          task = JSON.parse($(this).parent().children().val());
+          var text = $("#edit-text").val(task.name);
+          row = $(this).parent().parent().parent(); console.log(row);
+        });
+
+        $("#updateForm").submit(function(e){
           e.preventDefault();
-          var task = JSON.parse($(this).parent().children().val());
-          $("#edit-text").val(task.name);
-          $("#myModal").modal("show");
-
-          console.log(task);
-
+          // var tokenVerify = $("#tokenVerify").val(); console.log(tokenVerify);
+          var text = $("#edit-text").val();
+          var token = $("meta[name=csrf]").attr('token');
+          var id = task.id;
           $.ajax({
-            type : "PUT",
-            url : "/tasks/"+task.id,
-            success : function (data) {
+            url: '/tasks/' + id,
+            method: "POST",
+            data: {
+              _token: token,
+              _method: "PUT",
+              name: text
+            },
+            success: function(response) {
+              var newTask =
+                '<td class="table-text">' +
+                    '<div>' + text + '</div>' +
+                '</td>' +
 
+                '<td>' +
+                    '<form method="POST">' +
+                        '<button type="submit" id="delete-task-' + task.id + '" class="btn btn-danger">' +
+                            '<i class="fa fa-btn fa-trash"></i>Delete' +
+                      '</button>' +
+                    '</form>' +
+                '</td>' +
+
+                '<td>' +
+                    '<form>' +
+                      '<button type="button" class="btn btn-danger edit-task">' +
+                          '<i class="fa fa-btn fa-trash"></i>Edit' +
+                      '</button>' +
+                    '</form>' +
+                '</td>';
+
+              row.html(newTask);
+              $(".edit-task").click(function () {
+                $("#myModal").modal("toggle");
+                task = JSON.parse($(this).parent().children().val());
+                var text = $("#edit-text").val(task.name);
+                row = $(this).parent().parent().parent(); console.log(row);
+              });
+            },
+            error: function(response) {
+              console.log(response);
             }
-          });
-
+          })
         });
       });
     </script>

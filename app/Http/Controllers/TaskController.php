@@ -43,11 +43,11 @@ class TaskController extends Controller
     }
 
     public function edit(Request $request, $id) {
-        $task = Task::find($task);
+        $task = Task::find($id);
         $task->name = $request->name;
-
         $task->save();
-        return response()->json($task);
+
+        return redirect('/tasks');
     }
 
 }

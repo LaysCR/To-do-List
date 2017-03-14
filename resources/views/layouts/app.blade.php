@@ -12,6 +12,7 @@
 
       <!-- Latest compiled JavaScript -->
       <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+      <meta name="csrf" token="{{ csrf_token() }}">
       @yield('scripts')
     </head>
 
