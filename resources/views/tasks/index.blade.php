@@ -61,11 +61,9 @@
                             <!-- Delete Button -->
                             <td>
                                 <form action="{{ url('task/'.$task->id) }}" method="POST">
+                                  <input type="hidden" value="{{$task}}">
 
-                                    {{ csrf_field() }}
-                                    {{ method_field('DELETE') }}
-
-                                    <button type="submit" id="delete-task-{{ $task->id }}" class="btn btn-danger">
+                                    <button type="submit" class="btn btn-danger delete-task">
                                         <i class="fa fa-btn fa-trash"></i>Delete
                                     </button>
                                 </form>
@@ -125,12 +123,34 @@
         var task;
         var row;
 
-        $(".edit-task").click(function () {
+        function editTask() {
           $("#myModal").modal("toggle");
           task = JSON.parse($(this).parent().children().val());
-          var text = $("#edit-text").val(task.name);
-          row = $(this).parent().parent().parent(); console.log(row);
-        });
+          row = $(this).parent().parent().parent();
+          $("#edit-text").val(task.name);
+        }
+        function deleteTask(e) {
+          e.preventDefault();
+          task = JSON.parse($(this).parent().children().val()); console.log(task);
+          var token = $("meta[name=csrf]").attr('token');
+          $.ajax({
+            url : '/task/' + task,
+            method : "POST",
+            data : {
+              _token : token,
+              _method : "DELETE"
+            },
+            success : function(response) {
+              console.log(response);
+            },
+            error : function(response) {
+              console.log(response);
+            }
+          });
+        }
+
+        $(".edit-task").on("click", editTask);
+        $(".delete-task").on("click", deleteTask);
 
         $("#updateForm").submit(function(e){
           e.preventDefault();
@@ -148,33 +168,25 @@
             },
             success: function(response) {
               var newTask =
-                '<td class="table-text">' +
-                    '<div>' + text + '</div>' +
-                '</td>' +
-
-                '<td>' +
-                    '<form method="POST">' +
-                        '<button type="submit" id="delete-task-' + task.id + '" class="btn btn-danger">' +
-                            '<i class="fa fa-btn fa-trash"></i>Delete' +
-                      '</button>' +
-                    '</form>' +
-                '</td>' +
-
-                '<td>' +
-                    '<form>' +
-                      '<button type="button" class="btn btn-danger edit-task">' +
-                          '<i class="fa fa-btn fa-trash"></i>Edit' +
-                      '</button>' +
-                    '</form>' +
-                '</td>';
-
+              '<td class="table-text">' +
+                  '<div>' + text + '</div>' +
+              '</td>' +
+              '<td>' +
+                  '<form method="POST">' +
+                      '<button type="submit" id="delete-task-' + task.id + '" class="btn btn-danger">' +
+                          '<i class="fa fa-btn fa-trash"></i>Delete' +
+                    '</button>' +
+                  '</form>' +
+              '</td>' +
+              '<td>' +
+                  '<form>' +
+                    '<button type="button" class="btn btn-danger edit-task">' +
+                        '<i class="fa fa-btn fa-trash"></i>Edit' +
+                    '</button>' +
+                  '</form>' +
+              '</td>';
               row.html(newTask);
-              $(".edit-task").click(function () {
-                $("#myModal").modal("toggle");
-                task = JSON.parse($(this).parent().children().val());
-                var text = $("#edit-text").val(task.name);
-                row = $(this).parent().parent().parent(); console.log(row);
-              });
+              $(".edit-task").on("click",editTask);
             },
             error: function(response) {
               console.log(response);
