@@ -18,9 +18,9 @@ class TaskController extends Controller
     }
 
     public function index(Request $request) {
-      return view('tasks.index', [
-            'tasks' => $this->tasks->forUser($request->user()),
-        ]);
+      $tasks = $request->user()->tasks;
+
+      return view('tasks.index', compact('tasks'));
     }
 
     public function store(Request $request) {
@@ -32,14 +32,14 @@ class TaskController extends Controller
         'name' => $request->name,
       ]);
 
-      return redirect('/tasks');
+      return redirect('/');
     }
 
     public function destroy(Request $request, Task $task) {
         $this->authorize('destroy', $task);
         $task->delete();
 
-        return redirect('/tasks');
+        return redirect('/');
     }
 
     public function edit(Request $request, $id) {
@@ -47,7 +47,7 @@ class TaskController extends Controller
         $task->name = $request->name;
         $task->save();
 
-        return redirect('/tasks');
+        return redirect('/');
     }
 
 }
